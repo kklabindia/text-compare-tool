@@ -9,11 +9,11 @@
             --bg-color: #f8f9fa;
             --container-bg: #ffffff;
             --border-color: #cccccc;
-            --match-color: #e8f0fe; /* Light blue background for exact matches */
+            --match-color: #e8f0fe; 
             --match-text: #1967d2;
-            --del-color: #ffeef0; /* Light red for deletions */
+            --del-color: #ffeef0; 
             --del-text: #d73a49;
-            --ins-color: #e6ffed; /* Light green for insertions */
+            --ins-color: #e6ffed; 
             --ins-text: #22863a;
         }
 
@@ -87,7 +87,6 @@
             border-color: #007bff;
         }
 
-        /* Center Control Row (Status + Clear Button) */
         .controls-row {
             display: flex;
             justify-content: center;
@@ -117,7 +116,6 @@
             border: 1px solid #d73a49;
         }
 
-        /* Clear Button Styling */
         .clear-btn {
             padding: 7px 18px;
             background-color: #6c757d;
@@ -146,11 +144,9 @@
             line-height: 1.6;
         }
 
-        /* Character-level highlighting styles */
         .match-text {
             background-color: var(--match-color);
             color: var(--match-text);
-            border-bottom: 1px solid rgba(25, 103, 210, 0.2);
         }
 
         del {
@@ -187,7 +183,6 @@
         </div>
     </div>
 
-    <!-- Center Control Row -->
     <div class="controls-row">
         <div id="statusBadge"></div>
         <button id="clearBtn" class="clear-btn" onclick="clearSession()">Clear</button>
@@ -198,11 +193,44 @@
 </div>
 
 <script>
-// Inline Diff-Match-Patch Engine to ensure 100% offline reliability
-function diff_match_patch(){this.Diff_Timeout=1;this.Diff_EditCost=4;this.Match_Threshold=.5;this.Match_Distance=1E3;this.Patch_DeleteThreshold=.5;this.Patch_Margin=4;this.Match_MaxBits=32}diff_match_patch.prototype.diff_main=function(a,b,c,d){"undefined"==typeof d&&(d=0<=this.Diff_Timeout?new Date().getTime()+1E3*this.Diff_Timeout:0);if(null==a||null==b)throw Error("Null input. (diff_main)");if(a==b)return a?[[0,a]]:[];"undefined"==typeof c&&(c=!0);var e=c,f=this.diff_commonPrefix(a,b);c=a.substring(0,f);a=a.substring(f);b=b.substring(f);f=this.diff_commonSuffix(a,b);var g=a.substring(a.length-f);a=a.substring(0,a.length-f);b=b.substring(0,b.length-f);a=this.diff_compute_(a,b,e,d);c&&a.unshift([0,c]);g&&a.push([0,g]);this.diff_cleanupMerge(a);return a};diff_match_patch.prototype.diff_compute_=function(a,b,c,d){if(!a)return[[1,b]];if(!b)return[[-1,a]];var e=a.length>b.length?a:b,f=a.length>b.length?b:a,g=e.indexOf(f);if(-1!=g)return e=[[0,f]],a.length>b.length?e.unshift([-1,e.substring(0,g)]):e.push([1,e.substring(g+f.length)]),e;if(1==f.length)return[[-1,a],[1,b]];e=this.diff_halfMatch(a,b);if(f=e[0]){var g=e[1],h=e[2],i=e[3];e=e[4];a=this.diff_main(g,i,c,d);c=this.diff_main(h,e,c,d);return a.concat(c)}return c&&100<a.length&&100<b.length?this.diff_lineMode_(a,b,d):this.diff_bisect(a,b,d)};diff_match_patch.prototype.diff_lineMode_=function(a,b,c){var d=this.diff_linesToChars_(a,b);a=d.chars1;b=d.chars2;d=d.lineArray;a=this.diff_main(a,b,!1,c);this.diff_charsToLines_(a,d);this.diff_cleanupSemantic(a);a.push([0,""]);for(var e=b=c=0,f="",g="",h;c<a.length;){h=a[c][0];var i=a[c][1];switch(h){case 1:b++;g+=i;break;case -1:e++;f+=i;break;case 0:if(1<=e&&1<=b){a.splice(c-e-b,e+b);c=c-e-b;h=this.diff_main(f,g,!1,c);for(e=h.length-1;0<=e;e--)a.splice(c,0,h[e]);c+=h.length}b=e=0;f=g=""}c++}a.pop();return a};diff_match_patch.prototype.diff_bisect=function(a,b,c){for(var d=a.length,e=b.length,f=Math.ceil((d+e)/2),g=f,h=2*f,i=Array(h),k=Array(h),l=0;l<h;l++)i[l]=-1,k[l]=-1;i[g+1]=0;k[g+1]=0;for(var m=d-e,n=0%2!=0,p=0,q=0,r=0,s=0,t=0;t<f&&!(new Date().getTime()>c);t++){for(var u=-t+p;u<=t-q;u+=2){var v=g+u,w;w=u==-t||u!=t&&i[v-1]<i[v+1]?i[v+1]:i[v-1]+1;for(var x=w-u;w<d&&x<e&&a.charAt(w)==b.charAt(x);)w++,x++;i[v]=w;if(w>d)q+=2;else if(x>e)p+=2;else if(n&&(v=g+m-u,0<=v&&v<h&&-1!=k[v])){var y=d-k[v];if(w>=y)return this.diff_bisectSplit_(a,b,w,x,c)}}for(u=-t+r;u<=t-s;u+=2){v=g+u;w=u==-t||u!=t&&k[v-1]<k[v+1]?k[v+1]:k[v-1]+1;for(x=w-u;w<d&&x<e&&a.charAt(d-1-w)==b.charAt(e-1-x);)w++,x++;k[v]=w;if(w>d)s+=2;else if(x>e)r+=2;else if(!n&&(v=g+m-u,0<=v&&v<h&&-1!=i[v]))if(y=i[v],w=d-w,y>=w)return this.diff_bisectSplit_(a,b,y,e-x,c)}}return[[-1,a],[1,b]]};diff_match_patch.prototype.diff_bisectSplit_=function(a,b,c,d,e){var f=a.substring(0,c),g=b.substring(0,d);a=a.substring(c);b=b.substring(d);f=this.diff_main(f,g,!1,e);a=this.diff_main(a,b,!1,e);return f.concat(a)};diff_match_patch.prototype.diff_commonPrefix=function(a,b){if(!a||!b||a.charAt(0)!=b.charAt(0))return 0;for(var c=0,d=Math.min(a.length,b.length),e=d,f=0;c<e;)a.substring(f,e)==b.substring(f,e)?(c=e,f=c):d=e,e=Math.floor((c+d)/2);return e};diff_match_patch.prototype.diff_commonSuffix=function(a,b){if(!a||!b||a.charAt(a.length-1)!=b.charAt(b.length-1))return 0;for(var c=0,d=Math.min(a.length,b.length),e=d,f=0;c<e;)a.substring(a.length-e,a.length-f)==b.substring(b.length-e,b.length-f)?(c=e,f=c):d=e,e=Math.floor((c+d)/2);return e};diff_match_patch.prototype.diff_cleanupSemantic=function(a){for(var b=!1,c=[],d=0,e=null,f=0,g=0,h=0,i=0,k=0;f<a.length;)0==a[f][0]?(c[d++]=f,e=a[f][1],g=h,i=k,k=h=0):(-1==a[f][0]?(h+=a[f][1].length,g=a[f][1]):(k+=a[f][1].length,i=a[f][1]),e&&e.length<=Math.max(g,i)&&e.length<=Math.max(h,k)&&(a.splice(c[d-1],0,[-1,e]),a[c[d-1]+1][0]=1,d--,d--,f=0,e=null,k=h=0,b=!0)),f++;b&&this.diff_cleanupMerge(a);this.diff_cleanupSemanticLossless(a);for(f=1;f<a.length;){if(-1==a[f-1][0]&&1==a[f][0]){b=a[f-1][1];e=a[f][1];g=this.diff_commonOverlap_(b,e);h=this.diff_commonOverlap_(e,b);if(g>=h){if(g>=this.Diff_EditCost/2||b.length/2>=g&&e.length/2>=g)a.splice(f,0,[0,e.substring(0,g)]),a[f-1][1]=b.substring(0,b.length-g),a[f+1][1]=e.substring(g),f++}else if(h>=this.Diff_EditCost/2||e.length/2>=h&&b.length/2>=h)a.splice(f,0,[0,b.substring(0,h)]),a[f-1][0]=1,a[f-1][1]=e.substring(0,e.length-h),a[f+1][0]=-1,a[f+1][1]=b.substring(h),f++;f++}f++}};diff_match_patch.prototype.diff_commonOverlap_=function(a,b){var c=a.length,d=b.length;if(0==c||0==d)return 0;c>d?a=a.substring(c-d):c<d&&(b=b.substring(0,c));var e=Math.min(c,d);if(a==b)return e;for(var f=0,g=1;;){var h=b.substring(0,g),f=a.indexOf(h,f);if(-1==f)return 0;if(a.substring(f)==b.substring(0,c-f))return c-f;f++;g=c-f}};diff_match_patch.prototype.diff_cleanupSemanticLossless=function(a){function b(a,b){if(!a||!b)return 0;var c=a.charAt(a.length-1),d=b.charAt(0),e=c.match(/^\w$/),f=d.match(/^\w$/),g=e&&c.toUpperCase()!=c.toLowerCase(),h=f&&d.toUpperCase()!=d.toLowerCase();return c.match(/^\s$/)||b.match(/^\s$/)?5:e&&f?g&&h&&c==c.toLowerCase()&&d==d.toUpperCase()?3:2:!e&&!f?c==d?2:1:1}for(var c=1;c<a.length-1;){if(0==a[c-1][0]&&0==a[c+1][0]){var d=a[c-1][1],e=a[c][1],f=a[c+1][1],g=this.diff_commonSuffix(d,e);if(g){var h=e.substring(e.length-g);d=d.substring(0,d.length-g);e=h+e.substring(0,e.length-g);f=h+f}for(var g=d,h=e,i=f,k=b(d,e)+b(e,f);e.charAt(0)==f.charAt(0);){d+=e.charAt(0);e=e.substring(1)+f.charAt(0);f=f.substring(1);var l=b(d,e)+b(e,f);l>=k&&(k=l,g=d,h=e,i=f)}a[c-1][1]!=g&&(g?a[c-1][1]=g:a.splice(c-1,1),a[c][1]=h,i?a[c+1][1]=i:a.splice(c+1,1))}c++}};diff_match_patch.prototype.diff_cleanupMerge=function(a){a.push([0,""]);for(var b=0,c=0,d=0,e="",f="",g;b<a.length;)switch(a[b][0]){case 1:d++;f+=a[b][1];b++;break;case -1:c++;e+=a[b][1];b++;break;case 0:if(1<c+d||1==c&&1==d)0!==c&&0!==d?(g=this.diff_commonSuffix(e,f),0!==g&&(b-c-d>0&&0==a[b-c-d-1][0]?a[b-c-d-1][1]+=f.substring(f.length-g):a.splice(b-c-d,0,[0,f.substring(f.length-g)]),e=e.substring(0,e.length-g),f=f.substring(0,f.length-g)),g=this.diff_commonPrefix(e,f),0!==g&&(a[b][1]=f.substring(0,g)+a[b][1],e=e.substring(g),f=f.substring(g)),e?a[b-c-d][0]=-1:a.splice(b-c-d,1),f?e?a[b-c-d+1][0]=1:a[b-c-d][0]=1:a.splice(b-c-d+(e?1:0),1)):(1==c?a[b-1][0]=-1:a.splice(b-c,c),1==d?a[b-1][0]=1:a.splice(b-d,d)),b=b-c-d+(e?1:0)+(f?1:0),c=a[b][1],d=this.diff_commonPrefix(f,c),0!==d&&(f=f.substring(d),a[b][1]=c.substring(d));else if(0!==b&&0==a[b-1][0])a[b-1][1]+=a[b][1],a.splice(b,1),b--;else b++;d=c=0;f=e=""}""===a[a.length-1][1]&&a.pop()};diff_match_patch.prototype.diff_linesToChars_=function(a,b){function c(a){for(var b="",c=0,f=e.length,g=0;g<a.length;){var h=a.indexOf("\n",g);-1==h&&(h=a.length);var i=a.substring(g,h),k=d[i];if("undefined"!=typeof k)b+=String.fromCharCode(k);else{if(f==this.Match_MaxBits)i=a.substring(g),h=a.length;k=d[i]=e.length;e.push(i);b+=String.fromCharCode(k);f++}g=h+1}return b}var d={},e=[""];d[""]=0;var f=c(a),g=c(b);return{chars1:f,chars2:g,lineArray:e}};diff_match_patch.prototype.diff_charsToLines_=function(a,b){for(var c=0;c<a.length;){for(var d=a[c][1],e="",f=0;f<d.length;f++)e+=b[d.charCodeAt(f)];a[c][1]=e;c++}};
+// High-Precision LCS Matrix Diff Engine
+function computeDiffMatrix(text1, text2) {
+    const s1 = text1.split('');
+    const s2 = text2.split('');
+    const matrix = Array(s1.length + 1).fill(null).map(() => Array(s2.length + 1).fill(0));
 
-// Main comparison wrapper function
-const dmp = new diff_match_patch();
+    // Fill the Longest Common Subsequence matrix
+    for (let i = 1; i <= s1.length; i++) {
+        for (let j = 1; j <= s2.length; j++) {
+            if (s1[i - 1] === s2[j - 1]) {
+                matrix[i][j] = matrix[i - 1][j - 1] + 1;
+            } else {
+                matrix[i][j] = Math.max(matrix[i - 1][j], matrix[i][j - 1]);
+            }
+        }
+    }
+
+    // Backtrack to assemble exact diff segments
+    let i = s1.length;
+    let j = s2.length;
+    const diff = [];
+
+    while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && s1[i - 1] === s2[j - 1]) {
+            diff.push([0, s1[i - 1]]);
+            i--;
+            j--;
+        } else if (j > 0 && (i === 0 || matrix[i][j - 1] >= matrix[i - 1][j])) {
+            diff.push([1, s2[j - 1]]);
+            j--;
+        } else {
+            diff.push([-1, s1[i - 1]]);
+            i--;
+        }
+    }
+
+    return diff.reverse();
+}
 
 function autoCompare() {
     const text1 = document.getElementById('text1').value;
@@ -210,51 +238,62 @@ function autoCompare() {
     const output = document.getElementById('output');
     const statusBadge = document.getElementById('statusBadge');
 
-    // Requirement: Don't evaluate if both boxes are completely empty
     if (text1.trim() === "" && text2.trim() === "") {
         output.innerHTML = "Waiting for text in both boxes to begin comparison...";
         statusBadge.innerHTML = "";
         return;
     }
 
-    // Handle real-time Status Badge checking
     if (text1 === text2) {
         statusBadge.innerHTML = '<span class="status-badge status-matched">✓ Text Matched</span>';
     } else {
         statusBadge.innerHTML = '<span class="status-badge status-not-matched">✗ Text Not Matched</span>';
     }
 
-    // Generate diff matrix
-    const diffs = dmp.diff_main(text1, text2);
+    // Generate strict multi-error tracking via Matrix LCS
+    const rawDiffs = computeDiffMatrix(text1, text2);
     
-    // Semantic cleanup makes character-level differences cleaner to read
-    dmp.diff_cleanupSemantic(diffs);
+    // Group consecutive character blocks of the same operation type for clean HTML rendering
+    const groupedDiffs = [];
+    if (rawDiffs.length > 0) {
+        let currentOp = rawDiffs[0][0];
+        let currentText = rawDiffs[0][1];
+
+        for (let k = 1; k < rawDiffs.length; k++) {
+            if (rawDiffs[k][0] === currentOp) {
+                currentText += rawDiffs[k][1];
+            } else {
+                groupedDiffs.push([currentOp, currentText]);
+                currentOp = rawDiffs[k][0];
+                currentText = rawDiffs[k][1];
+            }
+        }
+        groupedDiffs.push([currentOp, currentText]);
+    }
 
     let htmlResult = '';
-    
-    diffs.forEach((part) => {
-        const operation = part[0]; // 0 = Equal, 1 = Insert, -1 = Delete
-        const text = part[1].replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    groupedDiffs.forEach(([operation, text]) => {
+        // Securely escape special HTML syntax
+        const safeText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
         if (operation === 0) {
-            htmlResult += `<span class="match-text">${text}</span>`;
+            htmlResult += `<span class="match-text">${safeText}</span>`;
         } else if (operation === 1) {
-            htmlResult += `<ins>${text}</ins>`;
+            htmlResult += `<ins>${safeText}</ins>`;
         } else if (operation === -1) {
-            htmlResult += `<del>${text}</del>`;
+            htmlResult += `<del>${safeText}</del>`;
         }
     });
 
     output.innerHTML = htmlResult;
 }
 
-// Function to reset fields and begin a new session
 function clearSession() {
     document.getElementById('text1').value = "";
     document.getElementById('text2').value = "";
     document.getElementById('statusBadge').innerHTML = "";
     document.getElementById('output').innerHTML = "Waiting for text in both boxes to begin comparison...";
-    document.getElementById('text1').focus(); // Automatically focuses on left box for immediate reuse
+    document.getElementById('text1').focus();
 }
 </script>
 
